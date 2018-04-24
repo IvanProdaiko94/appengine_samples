@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"net/http"
 	"context"
-	"appengine/socket"
+	"google.golang.org/appengine/socket"
 	"net"
 )
 
