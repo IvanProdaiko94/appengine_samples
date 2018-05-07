@@ -5,44 +5,39 @@ import (
 )
 
 type TransactionDelta struct {
-	u map[*firestore.DocumentRef][]firestore.Update
-	s map[*firestore.DocumentRef][]interface{}
 	tx *firestore.Transaction
+	delta []func() error
 }
 
-func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u firestore.Update) {
-	if _, ok := writes.u[doc]; ok {
-		writes.u[doc] = append(writes.u[doc], u)
-	} else {
-		writes.u[doc] = []firestore.Update{u}
-	}
+func (writes *TransactionDelta) Create(doc *firestore.DocumentRef, d interface{}) {
+	writes.delta = append(writes.delta, func() error {
+		return writes.tx.Create(doc, d)
+	})
 }
 
 func (writes *TransactionDelta) Set(doc *firestore.DocumentRef, d interface{}) {
-	if _, ok := writes.s[doc]; ok {
-		writes.s[doc] = append(writes.s[doc], d)
-	} else {
-		writes.s[doc] = []interface{}{d}
-	}
+	writes.delta = append(writes.delta, func() error {
+		return writes.tx.Set(doc, d)
+	})
 }
 
-func (writes *TransactionDelta) Get(doc *firestore.DocumentRef) ([]firestore.Update, []interface{}) {
-	return writes.u[doc], writes.s[doc]
+func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u firestore.Update) {
+	writes.delta = append(writes.delta, func() error {
+		return writes.tx.Update(doc, []firestore.Update{u})
+	})
+}
+
+func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef) {
+	writes.delta = append(writes.delta, func() error {
+		return writes.tx.Delete(doc)
+	})
 }
 
 func (writes *TransactionDelta) Apply() error {
-	for ref, value := range writes.u {
-		err := writes.tx.Update(ref, value)
+	for _, fn := range writes.delta {
+		err := fn()
 		if err != nil {
 			return err
-		}
-	}
-	for ref, value := range writes.s {
-		for _, newDoc := range value {
-			err := writes.tx.Set(ref, newDoc)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil
@@ -50,8 +45,7 @@ func (writes *TransactionDelta) Apply() error {
 
 func NewTransactionDelta(tx *firestore.Transaction) *TransactionDelta {
 	return &TransactionDelta{
-		u: make(map[*firestore.DocumentRef][]firestore.Update),
-		s: make(map[*firestore.DocumentRef][]interface{}),
 		tx: tx,
+		delta: []func() error{},
 	}
 }
