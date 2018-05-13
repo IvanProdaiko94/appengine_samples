@@ -15,21 +15,21 @@ func (writes *TransactionDelta) Create(doc *firestore.DocumentRef, d interface{}
 	})
 }
 
-func (writes *TransactionDelta) Set(doc *firestore.DocumentRef, d interface{}) {
+func (writes *TransactionDelta) Set(doc *firestore.DocumentRef, d interface{}, opts... firestore.SetOption) {
 	writes.delta = append(writes.delta, func() error {
-		return writes.tx.Set(doc, d)
+		return writes.tx.Set(doc, d, opts...)
 	})
 }
 
-func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u firestore.Update) {
+func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u []firestore.Update, precondition... firestore.Precondition) {
 	writes.delta = append(writes.delta, func() error {
-		return writes.tx.Update(doc, []firestore.Update{u})
+		return writes.tx.Update(doc, u, precondition...)
 	})
 }
 
-func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef) {
+func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef, precondition... firestore.Precondition) {
 	writes.delta = append(writes.delta, func() error {
-		return writes.tx.Delete(doc)
+		return writes.tx.Delete(doc, precondition...)
 	})
 }
 
