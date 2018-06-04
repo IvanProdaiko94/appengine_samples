@@ -22,43 +22,43 @@ type Logger interface {
 type RemoteLogger struct{}
 
 func (l *RemoteLogger) Debugf(ctx context.Context, format string, args ...interface{}) {
-	appengineLog.Debugf(ctx, format, args)
+	appengineLog.Debugf(ctx, format, args...)
 }
 
 func (l *RemoteLogger) Infof(ctx context.Context, format string, args ...interface{}) {
-	appengineLog.Infof(ctx, format, args)
+	appengineLog.Infof(ctx, format, args...)
 }
 
 func (l *RemoteLogger) Warningf(ctx context.Context, format string, args ...interface{}) {
-	appengineLog.Warningf(ctx, format, args)
+	appengineLog.Warningf(ctx, format, args...)
 }
 
 func (l *RemoteLogger) Errorf(ctx context.Context, format string, args ...interface{}) {
-	appengineLog.Errorf(ctx, format, args)
+	appengineLog.Errorf(ctx, format, args...)
 }
 
 func (l *RemoteLogger) Criticalf(ctx context.Context, format string, args ...interface{}) {
-	appengineLog.Criticalf(ctx, format, args)
+	appengineLog.Criticalf(ctx, format, args...)
 }
 
 type LocalLogger struct{}
 
 func (l *LocalLogger) Debugf(ctx context.Context, format string, args ...interface{}) {
-	fmt.Printf(format+"\n", args)
+	fmt.Printf(format+"\n", args...)
 }
 
 func (l *LocalLogger) Infof(ctx context.Context, format string, args ...interface{}) {
-	fmt.Printf(format+"\n", args)
+	fmt.Printf(format+"\n", args...)
 }
 
 func (l *LocalLogger) Warningf(ctx context.Context, format string, args ...interface{}) {
-	fmt.Printf(format+"\n", args)
+	fmt.Printf(format+"\n", args...)
 }
 
 func (l *LocalLogger) Errorf(ctx context.Context, format string, args ...interface{}) {
-	log.Printf(format+"\n", args)
+	log.Printf(format+"\n", args...)
 }
 
 func (l *LocalLogger) Criticalf(ctx context.Context, format string, args ...interface{}) {
-	log.Printf(format+"\n", args)
+	log.Printf(format+"\n", args...)
 }
