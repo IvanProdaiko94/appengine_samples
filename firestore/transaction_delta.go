@@ -33,6 +33,10 @@ func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef, precondition.
 	})
 }
 
+func (writes *TransactionDelta) Clear() {
+	writes.delta = []func() error{}
+}
+
 func (writes *TransactionDelta) Apply() error {
 	for _, fn := range writes.delta {
 		err := fn()
