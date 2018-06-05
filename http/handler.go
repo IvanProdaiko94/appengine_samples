@@ -26,7 +26,7 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !MethodCheck(w, r, handler.Method, ctx) {
 		return
 	}
-	if handler.Params != nil && len(handler.Params) > 0 {
+	if handler.Params != nil {
 		var params url.Values
 		if r.Method == http.MethodPost || r.Method == http.MethodPatch || r.Method == http.MethodPut {
 			if err := r.ParseForm(); err != nil {
