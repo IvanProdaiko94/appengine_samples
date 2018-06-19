@@ -9,32 +9,37 @@ type TransactionDelta struct {
 	delta []func() error
 }
 
-func (writes *TransactionDelta) Create(doc *firestore.DocumentRef, d interface{}) {
+func (writes *TransactionDelta) Create(doc *firestore.DocumentRef, d interface{}) *TransactionDelta {
 	writes.delta = append(writes.delta, func() error {
 		return writes.tx.Create(doc, d)
 	})
+	return writes
 }
 
-func (writes *TransactionDelta) Set(doc *firestore.DocumentRef, d interface{}, opts... firestore.SetOption) {
+func (writes *TransactionDelta) Set(doc *firestore.DocumentRef, d interface{}, opts... firestore.SetOption) *TransactionDelta {
 	writes.delta = append(writes.delta, func() error {
 		return writes.tx.Set(doc, d, opts...)
 	})
+	return writes
 }
 
-func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u []firestore.Update, precondition... firestore.Precondition) {
+func (writes *TransactionDelta) Update(doc *firestore.DocumentRef, u []firestore.Update, precondition... firestore.Precondition) *TransactionDelta {
 	writes.delta = append(writes.delta, func() error {
 		return writes.tx.Update(doc, u, precondition...)
 	})
+	return writes
 }
 
-func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef, precondition... firestore.Precondition) {
+func (writes *TransactionDelta) Delete(doc *firestore.DocumentRef, precondition... firestore.Precondition) *TransactionDelta {
 	writes.delta = append(writes.delta, func() error {
 		return writes.tx.Delete(doc, precondition...)
 	})
+	return writes
 }
 
-func (writes *TransactionDelta) Clear() {
+func (writes *TransactionDelta) Clear() *TransactionDelta {
 	writes.delta = []func() error{}
+	return writes
 }
 
 func (writes *TransactionDelta) Apply() error {
